@@ -3,11 +3,24 @@ import sys, os
 sys.path.append(os.getcwd() + '/web_app') #sesuai dengan mark directory as sources
 
 from app import create_app
-from models import Page, db
+from models import Page, db, Role, User
 
 app = create_app()
 
 with app.app_context():
+
+    admin_role = Role()
+    admin_role.name = 'admin'
+    db.session.add(admin_role)
+    db.session.commit()
+
+    root = User()
+    root.email = 'klifvegeta@gmail.com'
+    root.password = '123456'
+    root.active = True
+    root.roles.append(admin_role)
+    db.session.add(root)
+
     page = Page()
     page.title = 'Halaman Awal'
     page.contents = "<h1>Selamat datang!</h1>"

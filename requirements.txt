@@ -6,3 +6,5 @@ alembic
 flask-admin
 flask-wtf
 sqlalchemy==1.2.0b3
+flask-security
+bcrypt

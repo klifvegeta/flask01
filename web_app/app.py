@@ -1,9 +1,11 @@
 from flask import Flask, render_template
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+from flask_login import login_required
+from flask_security import SQLAlchemyUserDatastore, Security
 
-from models import db, Page, Menu
-from views import PageModelView
+from models import db, Page, Menu, User, Role
+from views import PageModelView, MenuModelView, SecuredAdminIndexView
 
 
 def create_app():
@@ -12,9 +14,12 @@ def create_app():
 
     db.init_app(app)
 
-    admin = Admin(app, name='Flask01', template_mode='bootstrap3')
+    admin = Admin(app, name='Flask01', template_mode='bootstrap3', index_view=SecuredAdminIndexView())
     admin.add_view(PageModelView(Page, db.session))
-    admin.add_view(ModelView(Menu, db.session))
+    admin.add_view(MenuModelView(Menu, db.session))
+
+    user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+    security = Security(app, user_datastore)
 
     @app.route('/')
     @app.route('/<url>')
@@ -39,6 +44,11 @@ def create_app():
 
 
         return render_template('index.html', TITLE='Flask-01', CONTENT=contents, menu=menu)
+
+    @app.route('/rahasia')
+    @login_required
+    def rahasia():
+        return '<h1>Luke dies!<h1>'
 
 
 
